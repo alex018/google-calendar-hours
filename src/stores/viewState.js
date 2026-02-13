@@ -150,6 +150,59 @@ export const selectHours = (state) => {
 export const selectNumberOfEvents = (state) =>
   selectEventsByRange(state)?.length || 0;
 
+const computeHoursInRange = (events, start, end) => {
+  let hours = 0;
+  events.forEach(({ start: evStart, end: evEnd }) => {
+    const evStartDate = new Date(evStart);
+    const evEndDate = new Date(evEnd);
+    if (evEndDate <= start || evStartDate >= end) return;
+    const clippedStart = evStartDate < start ? start : evStartDate;
+    const clippedEnd = evEndDate > end ? end : evEndDate;
+    hours += (clippedEnd - clippedStart) / 1000 / 60 / 60;
+  });
+  return roundHours(hours);
+};
+
+export const selectMonthlyGraphData = (state) => {
+  const events = selectCalendarEvents(state, selectSelectedCalendar(state));
+  if (!events) return null;
+
+  const year = dayjs(state.viewState.currentDatePointerStart).year();
+
+  return Array.from({ length: 12 }, (_, month) => {
+    const start = dayjs(`${year}-${String(month + 1).padStart(2, '0')}-01`)
+      .startOf('month')
+      .toDate();
+    const end = dayjs(`${year}-${String(month + 1).padStart(2, '0')}-01`)
+      .endOf('month')
+      .add(1, 'millisecond')
+      .toDate();
+    return {
+      label: dayjs(`${year}-${String(month + 1).padStart(2, '0')}-01`).format(
+        'MMM'
+      ),
+      hours: computeHoursInRange(events, start, end),
+    };
+  });
+};
+
+export const selectYearlyGraphData = (state) => {
+  const events = selectCalendarEvents(state, selectSelectedCalendar(state));
+  if (!events) return null;
+
+  const currentYear = dayjs().year();
+  const years = Array.from({ length: 5 }, (_, i) => currentYear - 4 + i);
+
+  return years.map((year) => {
+    const start = dayjs(`${year}-01-01`).startOf('year').toDate();
+    const end = dayjs(`${year}-12-31`).endOf('year').add(1, 'millisecond').toDate();
+    return {
+      label: String(year),
+      hours: computeHoursInRange(events, start, end),
+    };
+  });
+};
+
 export const setSelectedCalendar = ({ calendarId }) => (dispatch, getState) => {
   dispatch(setSelectedCalendarId(calendarId));
   updateConfig({ selectedCalendarId: calendarId });

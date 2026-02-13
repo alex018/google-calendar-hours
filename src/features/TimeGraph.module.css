@@ -1,0 +1,69 @@
+.container {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #444;
+}
+
+.toggle {
+  display: flex;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.toggleBtn {
+  background: none;
+  border: none;
+  padding: 4px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #5f6368;
+  transition: background 0.15s;
+}
+
+.toggleBtn:hover {
+  background: #f1f3f4;
+}
+
+.toggleBtn.active {
+  background: #1a73e8;
+  color: #fff;
+}
+
+.chart {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+.bar {
+  transition: opacity 0.15s;
+}
+
+.bar:hover {
+  opacity: 0.82;
+}
+
+.barLabel {
+  font-size: 9px;
+  fill: #555;
+}
+
+.axisLabel {
+  font-size: 10px;
+  fill: #888;
+}
