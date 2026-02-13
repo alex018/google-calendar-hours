@@ -56,6 +56,7 @@ const TimeGraph = () => {
         <span className={styles.title}>Time per calendar</span>
         <div className={styles.toggle}>
           <button
+            type="button"
             className={`${styles.toggleBtn} ${
               viewType === GRAPH_VIEW.MONTHLY ? styles.active : ''
             }`}
@@ -64,6 +65,7 @@ const TimeGraph = () => {
             Monthly
           </button>
           <button
+            type="button"
             className={`${styles.toggleBtn} ${
               viewType === GRAPH_VIEW.YEARLY ? styles.active : ''
             }`}

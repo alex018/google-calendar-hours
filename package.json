@@ -8,7 +8,7 @@
   "bugs": {
     "url": "https://github.com/aronwoost/google-calendar-hours/issues"
   },
-  "homepage": "https://google-calendar-hours.com/",
+  "homepage": "https://alex018.github.io/google-calendar-hours",
   "dependencies": {
     "@reduxjs/toolkit": "^1.1.0",
     "bootstrap": "^5.0.0-beta3",
