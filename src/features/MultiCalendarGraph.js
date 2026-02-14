@@ -560,7 +560,7 @@ const MultiCalendarGraph = () => {
               className={styles.colorDot}
               style={{ background: cal.color }}
             />
-            <span className={styles.calendarName}>{cal.label}</span>
+            <span className={styles.calendarName} title={cal.label}>{cal.label}</span>
             {!allData[cal.id] && (
               <span className={styles.loadingBadge}>loading…</span>
             )}
