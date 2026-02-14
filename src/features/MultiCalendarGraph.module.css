@@ -2,7 +2,14 @@
   background: #fff;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  padding: 16px;
+  padding: 20px;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 12px;
+    border-radius: 6px;
+  }
 }
 
 /* ── Calendar checklist ── */
@@ -42,7 +49,13 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 160px;
+  max-width: 200px;
+}
+
+@media (max-width: 600px) {
+  .calendarName {
+    max-width: 120px;
+  }
 }
 
 .loadingBadge {
@@ -84,12 +97,19 @@
 .toggleBtn {
   background: none;
   border: none;
-  padding: 4px 11px;
-  font-size: 12px;
+  padding: 6px 14px;
+  font-size: 13px;
   cursor: pointer;
   color: #5f6368;
   transition: background 0.15s;
   line-height: 1.4;
+}
+
+@media (max-width: 600px) {
+  .toggleBtn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
 }
 
 .toggleBtn:hover:not(:disabled) {

@@ -23,8 +23,8 @@ const TIME_RANGE = {
   YEARLY: 'yearly',
 };
 
-const BAR_CHART_HEIGHT = 240;
-const PADDING = { top: 28, right: 16, bottom: 40, left: 48 };
+const BAR_CHART_HEIGHT = 320;
+const PADDING = { top: 28, right: 16, bottom: 40, left: 52 };
 const Y_TICKS = 4;
 
 const chartHeight = BAR_CHART_HEIGHT - PADDING.top - PADDING.bottom;
