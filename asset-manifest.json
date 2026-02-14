@@ -1,23 +1,23 @@
 {
   "files": {
-    "main.css": "/google-calendar-hours/static/css/main.122f9134.chunk.css",
-    "main.js": "/google-calendar-hours/static/js/main.ea3e3167.chunk.js",
-    "main.js.map": "/google-calendar-hours/static/js/main.ea3e3167.chunk.js.map",
+    "main.css": "/google-calendar-hours/static/css/main.643ccbbc.chunk.css",
+    "main.js": "/google-calendar-hours/static/js/main.5e62acd1.chunk.js",
+    "main.js.map": "/google-calendar-hours/static/js/main.5e62acd1.chunk.js.map",
     "runtime-main.js": "/google-calendar-hours/static/js/runtime-main.46aeb567.js",
     "runtime-main.js.map": "/google-calendar-hours/static/js/runtime-main.46aeb567.js.map",
-    "vendors~main.js": "/google-calendar-hours/static/js/vendors~main.ddb94cc3.chunk.js",
-    "vendors~main.js.map": "/google-calendar-hours/static/js/vendors~main.ddb94cc3.chunk.js.map",
+    "vendors~main.js": "/google-calendar-hours/static/js/vendors~main.266bc9c4.chunk.js",
+    "vendors~main.js.map": "/google-calendar-hours/static/js/vendors~main.266bc9c4.chunk.js.map",
     "index.html": "/google-calendar-hours/index.html",
-    "precache-manifest.0bfc6acea0693d70a4b9fcfd727447aa.js": "/google-calendar-hours/precache-manifest.0bfc6acea0693d70a4b9fcfd727447aa.js",
+    "precache-manifest.57f42a8391e252bb29c03eb95dd2eb15.js": "/google-calendar-hours/precache-manifest.57f42a8391e252bb29c03eb95dd2eb15.js",
     "service-worker.js": "/google-calendar-hours/service-worker.js",
-    "static/css/main.122f9134.chunk.css.map": "/google-calendar-hours/static/css/main.122f9134.chunk.css.map",
-    "static/js/vendors~main.ddb94cc3.chunk.js.LICENSE.txt": "/google-calendar-hours/static/js/vendors~main.ddb94cc3.chunk.js.LICENSE.txt",
+    "static/css/main.643ccbbc.chunk.css.map": "/google-calendar-hours/static/css/main.643ccbbc.chunk.css.map",
+    "static/js/vendors~main.266bc9c4.chunk.js.LICENSE.txt": "/google-calendar-hours/static/js/vendors~main.266bc9c4.chunk.js.LICENSE.txt",
     "static/media/google_auth.png": "/google-calendar-hours/static/media/google_auth.75a7cb04.png"
   },
   "entrypoints": [
     "static/js/runtime-main.46aeb567.js",
-    "static/js/vendors~main.ddb94cc3.chunk.js",
-    "static/css/main.122f9134.chunk.css",
-    "static/js/main.ea3e3167.chunk.js"
+    "static/js/vendors~main.266bc9c4.chunk.js",
+    "static/css/main.643ccbbc.chunk.css",
+    "static/js/main.5e62acd1.chunk.js"
   ]
 }
