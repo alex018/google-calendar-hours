@@ -8,6 +8,7 @@ import {
   selectAllCalendarsYearlyData,
   selectAllCalendarsWeeklyData,
 } from '../stores/viewState';
+import { getConfig, updateConfig } from '../stores/storage';
 
 import styles from './MultiCalendarGraph.module.css';
 
@@ -66,7 +67,12 @@ const MultiCalendarGraph = () => {
   const calendars = useSelector(selectCalendars);
   const yearlyData = useSelector(selectAllCalendarsYearlyData);
 
-  const [checkedCalendars, setCheckedCalendars] = useState(new Set());
+  // null = not yet initialised (waiting for calendar list to arrive)
+  // Set  = explicit selection (including empty Set = all unchecked)
+  const [checkedCalendars, setCheckedCalendars] = useState(() => {
+    const saved = getConfig()?.checkedCalendarIds;
+    return Array.isArray(saved) ? new Set(saved) : null;
+  });
   const [chartType, setChartType] = useState(CHART_TYPE.STACKED);
   const [timeRange, setTimeRange] = useState(TIME_RANGE.MONTHLY);
   const [graphYear, setGraphYear] = useState(dayjs().year());
@@ -76,12 +82,12 @@ const MultiCalendarGraph = () => {
   const monthlyData = useSelector((state) => selectAllCalendarsMonthlyData(state, graphYear));
   const weeklyData = useSelector((state) => selectAllCalendarsWeeklyData(state, graphYear));
 
-  // Initialize all calendars as checked when the list is first available
+  // First-time init: no saved selection → default to all calendars checked
   useEffect(() => {
-    if (calendars && checkedCalendars.size === 0) {
+    if (calendars && checkedCalendars === null) {
       setCheckedCalendars(new Set(calendars.map((c) => c.id)));
     }
-  }, [calendars, checkedCalendars.size]);
+  }, [calendars, checkedCalendars]);
 
   const toggleCalendar = (calendarId) => {
     setCheckedCalendars((prev) => {
@@ -91,6 +97,7 @@ const MultiCalendarGraph = () => {
       } else {
         next.add(calendarId);
       }
+      updateConfig({ checkedCalendarIds: [...next] });
       return next;
     });
   };
@@ -98,9 +105,12 @@ const MultiCalendarGraph = () => {
   // Pick the right data set based on timeRange
   const allData = pickData(timeRange, weeklyData, monthlyData, yearlyData);
 
+  // While null (waiting for first calendar list), treat everything as checked
+  const isChecked = (id) => checkedCalendars === null || checkedCalendars.has(id);
+
   // Active calendars = those that are checked AND have data loaded
   const activeCalendars = (calendars || []).filter(
-    (c) => checkedCalendars.has(c.id) && allData[c.id]
+    (c) => isChecked(c.id) && allData[c.id]
   );
 
   // Get period labels from the first active calendar's data, or empty
@@ -479,7 +489,7 @@ const MultiCalendarGraph = () => {
           <label key={cal.id} className={styles.calendarItem}>
             <input
               type="checkbox"
-              checked={checkedCalendars.has(cal.id)}
+              checked={isChecked(cal.id)}
               onChange={() => toggleCalendar(cal.id)}
               className={styles.checkbox}
             />
