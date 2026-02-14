@@ -36,5 +36,6 @@ module.exports = {
     'testing-library/no-manual-cleanup': 'error',
     'testing-library/prefer-screen-queries': 'error',
     'no-only-tests/no-only-tests': 'error',
+    'react/jsx-props-no-spreading': ['error', { html: 'ignore' }],
   },
 };
