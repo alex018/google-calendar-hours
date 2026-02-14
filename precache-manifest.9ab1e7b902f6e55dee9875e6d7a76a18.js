@@ -1,15 +1,15 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "1e9732b995bb67051cca5ee8df242dd9",
+    "revision": "b2c08595eaddd947fe75a0948c55a630",
     "url": "/google-calendar-hours/index.html"
   },
   {
-    "revision": "de2542c3b50654cec4af",
-    "url": "/google-calendar-hours/static/css/main.7cffe876.chunk.css"
+    "revision": "aa3169666e8c2c4e43b1",
+    "url": "/google-calendar-hours/static/css/main.690a29ba.chunk.css"
   },
   {
-    "revision": "de2542c3b50654cec4af",
-    "url": "/google-calendar-hours/static/js/main.1eb3be63.chunk.js"
+    "revision": "aa3169666e8c2c4e43b1",
+    "url": "/google-calendar-hours/static/js/main.c99ee8cc.chunk.js"
   },
   {
     "revision": "96d1874c5e93abaca9d9",
