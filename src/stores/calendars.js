@@ -23,9 +23,10 @@ export const loadCalendars = () => async (dispatch, getState) => {
   const accessToken = selectAccessToken(getState());
   try {
     const { items } = await fetchCalendars({ accessToken });
-    const calendarList = items.map(({ id, summary }) => ({
+    const calendarList = items.map(({ id, summary, backgroundColor }) => ({
       id,
       label: summary,
+      color: backgroundColor || '#4285f4',
     }));
 
     dispatch(setCalendars(calendarList));
@@ -50,5 +51,10 @@ export const loadCalendars = () => async (dispatch, getState) => {
 };
 
 export const selectCalendars = (state) => state.calendars.list;
+
+export const selectCalendarColor = (state, calendarId) => {
+  const calendar = state.calendars.list?.find(({ id }) => id === calendarId);
+  return calendar?.color || '#4285f4';
+};
 
 export default calendars.reducer;

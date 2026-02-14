@@ -10,6 +10,7 @@ import RangeDisplay from './features/RangeDisplay';
 import Events from './features/Events';
 import WeekStart from './features/WeekStart';
 import ShowDetailsButton from './features/ShowDetailsButton';
+import TimeGraph from './features/TimeGraph';
 import {
   selectSelectedCalendar,
   selectRangeType,
@@ -57,6 +58,7 @@ const Interface = () => {
           <Hours />
           {rangeType === RANGE_TYPE.WEEK && <WeekStart />}
           {rangeType !== RANGE_TYPE.TOTAL && <RangeDisplay />}
+          <TimeGraph />
           {Boolean(hours) && (
             <ShowDetailsButton
               isEventsOpen={isEventsOpen}
