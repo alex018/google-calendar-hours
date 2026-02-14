@@ -25,7 +25,9 @@
     "test": "node scripts/test.js",
     "lint": "eslint --ext js src",
     "lint:css": "stylelint 'src/**/*.css'",
-    "prettier": "prettier-eslint --write $PWD'/src/**/*.{js,md}'"
+    "prettier": "prettier-eslint --write $PWD'/src/**/*.{js,md}'",
+    "predeploy": "NODE_OPTIONS=--openssl-legacy-provider node scripts/build.js",
+    "deploy": "gh-pages -d build"
   },
   "browserslist": {
     "production": [
@@ -114,7 +116,8 @@
     "webpack": "^4.42.0",
     "webpack-dev-server": "^3.11.0",
     "webpack-manifest-plugin": "^2.2.0",
-    "workbox-webpack-plugin": "^4.3.1"
+    "workbox-webpack-plugin": "^4.3.1",
+    "gh-pages": "^3.2.3"
   },
   "jest": {
     "roots": [
