@@ -34,6 +34,12 @@ function niceMax(rawMax) {
   return Math.ceil(rawMax / Y_TICKS) * Y_TICKS;
 }
 
+function pickData(timeRange, weeklyData, monthlyData, yearlyData) {
+  if (timeRange === TIME_RANGE.WEEKLY) return weeklyData;
+  if (timeRange === TIME_RANGE.MONTHLY) return monthlyData;
+  return yearlyData;
+}
+
 // Compute pie arc path
 function pieSlicePath(cx, cy, r, startAngle, endAngle, innerR) {
   const toRad = (deg) => (deg * Math.PI) / 180;
@@ -86,12 +92,7 @@ const MultiCalendarGraph = () => {
   };
 
   // Pick the right data set based on timeRange
-  const allData =
-    timeRange === TIME_RANGE.WEEKLY
-      ? weeklyData
-      : timeRange === TIME_RANGE.MONTHLY
-      ? monthlyData
-      : yearlyData;
+  const allData = pickData(timeRange, weeklyData, monthlyData, yearlyData);
 
   // Active calendars = those that are checked AND have data loaded
   const activeCalendars = (calendars || []).filter(
@@ -209,17 +210,17 @@ const MultiCalendarGraph = () => {
   const renderStackedBars = () => {
     const skipEvery = isWeekly ? 4 : 1;
     return (
-      <>
+      <React.Fragment>
         {renderYAxis()}
         {renderXAxis()}
         {renderXLabels(skipEvery)}
-        {periods.map((_, periodIdx) => {
+        {periods.map((period, periodIdx) => {
           const x =
             PADDING.left + periodIdx * barSlotWidth + stackedBarOffset;
           let yBottom = PADDING.top + chartHeight;
 
           return (
-            <g key={periodIdx}>
+            <g key={period.label}>
               {activeCalendars.map((cal) => {
                 const hours = allData[cal.id]?.[periodIdx]?.hours || 0;
                 if (hours === 0) return null;
@@ -237,26 +238,26 @@ const MultiCalendarGraph = () => {
                     rx="2"
                     className={styles.bar}
                   >
-                    <title>{`${cal.label} — ${periods[periodIdx]?.label}: ${hours}h`}</title>
+                    <title>{`${cal.label} — ${period.label}: ${hours}h`}</title>
                   </rect>
                 );
               })}
             </g>
           );
         })}
-      </>
+      </React.Fragment>
     );
   };
 
   const renderGroupedBars = () => {
     const skipEvery = isWeekly ? 4 : 1;
     return (
-      <>
+      <React.Fragment>
         {renderYAxis()}
         {renderXAxis()}
         {renderXLabels(skipEvery)}
-        {periods.map((_, periodIdx) => (
-          <g key={periodIdx}>
+        {periods.map((period, periodIdx) => (
+          <g key={period.label}>
             {activeCalendars.map((cal, calIdx) => {
               const hours = allData[cal.id]?.[periodIdx]?.hours || 0;
               const barH = Math.max((hours / yMax) * chartHeight, hours > 0 ? 1 : 0);
@@ -277,20 +278,20 @@ const MultiCalendarGraph = () => {
                   rx="1"
                   className={styles.bar}
                 >
-                  <title>{`${cal.label} — ${periods[periodIdx]?.label}: ${hours}h`}</title>
+                  <title>{`${cal.label} — ${period.label}: ${hours}h`}</title>
                 </rect>
               );
             })}
           </g>
         ))}
-      </>
+      </React.Fragment>
     );
   };
 
   const renderLineChart = () => {
     const skipEvery = isWeekly ? 4 : 1;
     return (
-      <>
+      <React.Fragment>
         {renderYAxis()}
         {renderXAxis()}
         {renderXLabels(skipEvery)}
@@ -316,14 +317,14 @@ const MultiCalendarGraph = () => {
                 strokeLinecap="round"
                 className={styles.line}
               />
-              {calData.map((d, i) => {
+              {calData.map((d) => {
                 if (d.hours === 0) return null;
-                const x = PADDING.left + i * barSlotWidth + barSlotWidth / 2;
+                const x = PADDING.left + calData.indexOf(d) * barSlotWidth + barSlotWidth / 2;
                 const y =
                   PADDING.top + chartHeight - (d.hours / yMax) * chartHeight;
                 return (
                   <circle
-                    key={i}
+                    key={d.label}
                     cx={x}
                     cy={y}
                     r="3"
@@ -337,7 +338,7 @@ const MultiCalendarGraph = () => {
             </g>
           );
         })}
-      </>
+      </React.Fragment>
     );
   };
 
@@ -381,7 +382,7 @@ const MultiCalendarGraph = () => {
       });
 
     return (
-      <>
+      <React.Fragment>
         {slices.map((s) => (
           <path
             key={s.id}
@@ -417,16 +418,51 @@ const MultiCalendarGraph = () => {
             </g>
           );
         })}
-      </>
+      </React.Fragment>
     );
   };
 
   const isPie = chartType === CHART_TYPE.PIE;
   const pieSvgWidth = 540;
-  const pieSvgHeight = Math.max(
-    240,
-    activeCalendars.length * 22 + 80
-  );
+  const pieSvgHeight = Math.max(240, activeCalendars.length * 22 + 80);
+
+  const renderChart = () => {
+    if (activeCalendars.length === 0) {
+      return (
+        <div className={styles.empty}>
+          Select at least one calendar to show the chart.
+        </div>
+      );
+    }
+    if (isPie) {
+      return (
+        <svg
+          className={styles.chart}
+          viewBox={`0 0 ${pieSvgWidth} ${pieSvgHeight}`}
+          aria-label="Pie chart: time per calendar"
+        >
+          {renderPieChart()}
+        </svg>
+      );
+    }
+    return (
+      <div
+        className={`${styles.chartScroll} ${isWeekly ? styles.scrollable : ''}`}
+        ref={scrollRef}
+      >
+        <svg
+          className={styles.chart}
+          viewBox={`0 0 ${svgWidth} ${BAR_CHART_HEIGHT}`}
+          style={isWeekly ? { minWidth: svgWidth } : {}}
+          aria-label={`${chartType} ${timeRange} hours chart`}
+        >
+          {chartType === CHART_TYPE.STACKED && renderStackedBars()}
+          {chartType === CHART_TYPE.GROUPED && renderGroupedBars()}
+          {chartType === CHART_TYPE.LINE && renderLineChart()}
+        </svg>
+      </div>
+    );
+  };
 
   return (
     <div className={styles.container}>
@@ -498,33 +534,7 @@ const MultiCalendarGraph = () => {
       </div>
 
       {/* Chart */}
-      {activeCalendars.length === 0 ? (
-        <div className={styles.empty}>Select at least one calendar to show the chart.</div>
-      ) : isPie ? (
-        <svg
-          className={styles.chart}
-          viewBox={`0 0 ${pieSvgWidth} ${pieSvgHeight}`}
-          aria-label="Pie chart: time per calendar"
-        >
-          {renderPieChart()}
-        </svg>
-      ) : (
-        <div
-          className={`${styles.chartScroll} ${isWeekly ? styles.scrollable : ''}`}
-          ref={scrollRef}
-        >
-          <svg
-            className={styles.chart}
-            viewBox={`0 0 ${svgWidth} ${BAR_CHART_HEIGHT}`}
-            style={isWeekly ? { minWidth: svgWidth } : {}}
-            aria-label={`${chartType} ${timeRange} hours chart`}
-          >
-            {chartType === CHART_TYPE.STACKED && renderStackedBars()}
-            {chartType === CHART_TYPE.GROUPED && renderGroupedBars()}
-            {chartType === CHART_TYPE.LINE && renderLineChart()}
-          </svg>
-        </div>
-      )}
+      {renderChart()}
     </div>
   );
 };
