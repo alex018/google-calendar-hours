@@ -270,6 +270,7 @@ const MultiCalendarGraph = () => {
                 const barH = (hours / yMax) * chartHeight;
                 const y = yBottom - barH;
                 yBottom = y;
+                const h = makeHandlers(`${cal.label} — ${period.label}: ${hours}h`);
                 return (
                   <rect
                     key={cal.id}
@@ -280,7 +281,10 @@ const MultiCalendarGraph = () => {
                     fill={cal.color}
                     rx="2"
                     className={styles.bar}
-                    {...makeHandlers(`${cal.label} — ${period.label}: ${hours}h`)}
+                    onMouseEnter={h.onMouseEnter}
+                    onMouseMove={h.onMouseMove}
+                    onMouseLeave={h.onMouseLeave}
+                    onTouchStart={h.onTouchStart}
                   />
                 );
               })}
@@ -309,6 +313,7 @@ const MultiCalendarGraph = () => {
                 barSlotWidth * 0.1 +
                 calIdx * groupedBarWidth;
               const y = PADDING.top + chartHeight - barH;
+              const h = makeHandlers(`${cal.label} — ${period.label}: ${hours}h`);
               return (
                 <rect
                   key={cal.id}
@@ -319,7 +324,10 @@ const MultiCalendarGraph = () => {
                   fill={cal.color}
                   rx="1"
                   className={styles.bar}
-                  {...makeHandlers(`${cal.label} — ${period.label}: ${hours}h`)}
+                  onMouseEnter={h.onMouseEnter}
+                  onMouseMove={h.onMouseMove}
+                  onMouseLeave={h.onMouseLeave}
+                  onTouchStart={h.onTouchStart}
                 />
               );
             })}
@@ -363,6 +371,7 @@ const MultiCalendarGraph = () => {
                 const x = PADDING.left + calData.indexOf(d) * barSlotWidth + barSlotWidth / 2;
                 const y =
                   PADDING.top + chartHeight - (d.hours / yMax) * chartHeight;
+                const h = makeHandlers(`${cal.label} — ${d.label}: ${d.hours}h`);
                 return (
                   <circle
                     key={d.label}
@@ -371,7 +380,10 @@ const MultiCalendarGraph = () => {
                     r="3"
                     fill={cal.color}
                     className={styles.dot}
-                    {...makeHandlers(`${cal.label} — ${d.label}: ${d.hours}h`)}
+                    onMouseEnter={h.onMouseEnter}
+                    onMouseMove={h.onMouseMove}
+                    onMouseLeave={h.onMouseLeave}
+                    onTouchStart={h.onTouchStart}
                   />
                 );
               })}
@@ -423,17 +435,23 @@ const MultiCalendarGraph = () => {
 
     return (
       <React.Fragment>
-        {slices.map((s) => (
-          <path
-            key={s.id}
-            d={pieSlicePath(cx, cy, r, s.startAngle, s.endAngle, innerR)}
-            fill={s.color}
-            stroke="#fff"
-            strokeWidth="2"
-            className={styles.bar}
-            {...makeHandlers(`${s.label}: ${s.total.toFixed(1)}h (${s.pct}%)`)}
-          />
-        ))}
+        {slices.map((s) => {
+          const h = makeHandlers(`${s.label}: ${s.total.toFixed(1)}h (${s.pct}%)`);
+          return (
+            <path
+              key={s.id}
+              d={pieSlicePath(cx, cy, r, s.startAngle, s.endAngle, innerR)}
+              fill={s.color}
+              stroke="#fff"
+              strokeWidth="2"
+              className={styles.bar}
+              onMouseEnter={h.onMouseEnter}
+              onMouseMove={h.onMouseMove}
+              onMouseLeave={h.onMouseLeave}
+              onTouchStart={h.onTouchStart}
+            />
+          );
+        })}
         {/* Center label */}
         <text x={cx} y={cy - 6} textAnchor="middle" className={styles.pieCenter}>
           {grandTotal.toFixed(0)}h
