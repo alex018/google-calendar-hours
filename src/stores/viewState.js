@@ -206,16 +206,16 @@ export const selectYearlyGraphData = (state) => {
   });
 };
 
-export const selectAllCalendarsMonthlyData = (state) => {
+export const selectAllCalendarsMonthlyData = (state, year) => {
   const eventsMap = selectAllCalendarEventsMap(state);
-  const currentYear = dayjs().year();
+  const targetYear = year || dayjs().year();
 
   const result = {};
   Object.keys(eventsMap).forEach((calendarId) => {
     const events = eventsMap[calendarId];
     if (!events) return;
     result[calendarId] = Array.from({ length: 12 }, (_, month) => {
-      const d = dayjs(`${currentYear}-${String(month + 1).padStart(2, '0')}-01`);
+      const d = dayjs(`${targetYear}-${String(month + 1).padStart(2, '0')}-01`);
       return {
         label: d.format('MMM'),
         hours: computeHoursInRange(
@@ -250,9 +250,9 @@ export const selectAllCalendarsYearlyData = (state) => {
   return result;
 };
 
-export const selectAllCalendarsWeeklyData = (state) => {
+export const selectAllCalendarsWeeklyData = (state, year) => {
   const eventsMap = selectAllCalendarEventsMap(state);
-  const currentYear = dayjs().year();
+  const currentYear = year || dayjs().year();
   // Determine number of ISO weeks in the current year
   const weeksInYear = dayjs(`${currentYear}-12-28`).isoWeek();
 

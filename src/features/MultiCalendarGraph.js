@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import dayjs from 'dayjs';
 
 import { selectCalendars } from '../stores/calendars';
 import {
@@ -63,14 +64,17 @@ function pieSlicePath(cx, cy, r, startAngle, endAngle, innerR) {
 
 const MultiCalendarGraph = () => {
   const calendars = useSelector(selectCalendars);
-  const monthlyData = useSelector(selectAllCalendarsMonthlyData);
   const yearlyData = useSelector(selectAllCalendarsYearlyData);
-  const weeklyData = useSelector(selectAllCalendarsWeeklyData);
 
   const [checkedCalendars, setCheckedCalendars] = useState(new Set());
   const [chartType, setChartType] = useState(CHART_TYPE.STACKED);
   const [timeRange, setTimeRange] = useState(TIME_RANGE.MONTHLY);
+  const [graphYear, setGraphYear] = useState(dayjs().year());
   const scrollRef = useRef(null);
+
+  // These selectors re-run whenever graphYear changes
+  const monthlyData = useSelector((state) => selectAllCalendarsMonthlyData(state, graphYear));
+  const weeklyData = useSelector((state) => selectAllCalendarsWeeklyData(state, graphYear));
 
   // Initialize all calendars as checked when the list is first available
   useEffect(() => {
@@ -423,6 +427,9 @@ const MultiCalendarGraph = () => {
   };
 
   const isPie = chartType === CHART_TYPE.PIE;
+  const isYearly = timeRange === TIME_RANGE.YEARLY;
+  const showYearNav = !isPie && !isYearly;
+  const thisYear = dayjs().year();
   const pieSvgWidth = 540;
   const pieSvgHeight = Math.max(240, activeCalendars.length * 22 + 80);
 
@@ -535,6 +542,30 @@ const MultiCalendarGraph = () => {
 
       {/* Chart */}
       {renderChart()}
+
+      {/* Year navigation — shown for weekly and monthly views */}
+      {showYearNav && (
+        <div className={styles.yearNav}>
+          <button
+            type="button"
+            className={styles.yearNavBtn}
+            onClick={() => setGraphYear((y) => y - 1)}
+            aria-label="Previous year"
+          >
+            &#8592;
+          </button>
+          <span className={styles.yearLabel}>{graphYear}</span>
+          <button
+            type="button"
+            className={styles.yearNavBtn}
+            onClick={() => setGraphYear((y) => y + 1)}
+            disabled={graphYear >= thisYear}
+            aria-label="Next year"
+          >
+            &#8594;
+          </button>
+        </div>
+      )}
     </div>
   );
 };
