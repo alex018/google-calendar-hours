@@ -3,7 +3,7 @@ import { encode } from 'qss';
 
 import logo from './google_auth.png';
 
-const googleClientId = '502172359025.apps.googleusercontent.com';
+const googleClientId = '386288482739-qv303lmckdqrmksk8mqpihpfu4o8kc7k.apps.googleusercontent.com';
 const googleScope =
   'https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar.events.readonly';
 

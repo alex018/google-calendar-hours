@@ -26,9 +26,9 @@ React + Redux Toolkit SPA, deployed to GitHub Pages (`alex018.github.io/google-c
 
 The Google OAuth Client ID is hardcoded in `src/AuthScreen.js` (line 6):
 ```js
-const googleClientId = '502172359025.apps.googleusercontent.com';
+const googleClientId = '386288482739-qv303lmckdqrmksk8mqpihpfu4o8kc7k.apps.googleusercontent.com';
 ```
-This belongs to the original upstream author's Google Cloud project. To use your own credentials, replace this value with your own OAuth 2.0 Client ID (type: Web application, with `https://alex018.github.io` as an authorized JavaScript origin). The app uses `response_type: token` (implicit flow) — no client secret or redirect URI handling required.
+The app uses `response_type: token` (implicit flow) — no client secret or redirect URI handling required. Make sure `https://alex018.github.io` is listed as an authorized JavaScript origin in your Google Cloud OAuth client settings.
 
 ### Redux Store (`src/stores/`)
 
