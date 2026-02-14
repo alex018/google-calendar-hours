@@ -127,8 +127,28 @@
 }
 
 /* ── Chart area ── */
+.chartArea {
+  position: relative;
+}
+
 .chartScroll {
   width: 100%;
+}
+
+/* ── Tooltip ── */
+.tooltip {
+  position: absolute;
+  background: rgba(30, 30, 30, 0.82);
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.4;
+  padding: 5px 10px;
+  border-radius: 6px;
+  pointer-events: none;
+  white-space: nowrap;
+  transform: translate(-50%, calc(-100% - 10px));
+  z-index: 20;
+  backdrop-filter: blur(2px);
 }
 
 .scrollable {

@@ -77,6 +77,35 @@ const MultiCalendarGraph = () => {
   const [timeRange, setTimeRange] = useState(TIME_RANGE.MONTHLY);
   const [graphYear, setGraphYear] = useState(dayjs().year());
   const scrollRef = useRef(null);
+  const chartAreaRef = useRef(null);
+  const [tooltip, setTooltip] = useState(null); // { x, y, text } | null
+  const touchTimerRef = useRef(null);
+
+  const makeHandlers = (text) => ({
+    onMouseEnter(e) {
+      const rect = chartAreaRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      setTooltip({ x: e.clientX - rect.left, y: e.clientY - rect.top, text });
+    },
+    onMouseMove(e) {
+      const rect = chartAreaRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      setTooltip((prev) =>
+        prev ? { ...prev, x: e.clientX - rect.left, y: e.clientY - rect.top } : prev
+      );
+    },
+    onMouseLeave() {
+      setTooltip(null);
+    },
+    onTouchStart(e) {
+      clearTimeout(touchTimerRef.current);
+      const touch = e.touches[0];
+      const rect = chartAreaRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      setTooltip({ x: touch.clientX - rect.left, y: touch.clientY - rect.top, text });
+      touchTimerRef.current = setTimeout(() => setTooltip(null), 2500);
+    },
+  });
 
   // These selectors re-run whenever graphYear changes
   const monthlyData = useSelector((state) => selectAllCalendarsMonthlyData(state, graphYear));
@@ -251,9 +280,8 @@ const MultiCalendarGraph = () => {
                     fill={cal.color}
                     rx="2"
                     className={styles.bar}
-                  >
-                    <title>{`${cal.label} — ${period.label}: ${hours}h`}</title>
-                  </rect>
+                    {...makeHandlers(`${cal.label} — ${period.label}: ${hours}h`)}
+                  />
                 );
               })}
             </g>
@@ -291,9 +319,8 @@ const MultiCalendarGraph = () => {
                   fill={cal.color}
                   rx="1"
                   className={styles.bar}
-                >
-                  <title>{`${cal.label} — ${period.label}: ${hours}h`}</title>
-                </rect>
+                  {...makeHandlers(`${cal.label} — ${period.label}: ${hours}h`)}
+                />
               );
             })}
           </g>
@@ -344,9 +371,8 @@ const MultiCalendarGraph = () => {
                     r="3"
                     fill={cal.color}
                     className={styles.dot}
-                  >
-                    <title>{`${cal.label} — ${d.label}: ${d.hours}h`}</title>
-                  </circle>
+                    {...makeHandlers(`${cal.label} — ${d.label}: ${d.hours}h`)}
+                  />
                 );
               })}
             </g>
@@ -405,9 +431,8 @@ const MultiCalendarGraph = () => {
             stroke="#fff"
             strokeWidth="2"
             className={styles.bar}
-          >
-            <title>{`${s.label}: ${s.total.toFixed(1)}h (${s.pct}%)`}</title>
-          </path>
+            {...makeHandlers(`${s.label}: ${s.total.toFixed(1)}h (${s.pct}%)`)}
+          />
         ))}
         {/* Center label */}
         <text x={cx} y={cy - 6} textAnchor="middle" className={styles.pieCenter}>
@@ -453,30 +478,50 @@ const MultiCalendarGraph = () => {
     }
     if (isPie) {
       return (
-        <svg
-          className={styles.chart}
-          viewBox={`0 0 ${pieSvgWidth} ${pieSvgHeight}`}
-          aria-label="Pie chart: time per calendar"
-        >
-          {renderPieChart()}
-        </svg>
+        <div ref={chartAreaRef} className={styles.chartArea}>
+          <svg
+            className={styles.chart}
+            viewBox={`0 0 ${pieSvgWidth} ${pieSvgHeight}`}
+            aria-label="Pie chart: time per calendar"
+          >
+            {renderPieChart()}
+          </svg>
+          {tooltip && (
+            <div
+              className={styles.tooltip}
+              style={{ left: tooltip.x, top: tooltip.y }}
+            >
+              {tooltip.text}
+            </div>
+          )}
+        </div>
       );
     }
     return (
-      <div
-        className={`${styles.chartScroll} ${isWeekly ? styles.scrollable : ''}`}
-        ref={scrollRef}
-      >
-        <svg
-          className={styles.chart}
-          viewBox={`0 0 ${svgWidth} ${BAR_CHART_HEIGHT}`}
-          style={isWeekly ? { minWidth: svgWidth } : {}}
-          aria-label={`${chartType} ${timeRange} hours chart`}
+      <div ref={chartAreaRef} className={styles.chartArea}>
+        <div
+          className={`${styles.chartScroll} ${isWeekly ? styles.scrollable : ''}`}
+          ref={scrollRef}
         >
-          {chartType === CHART_TYPE.STACKED && renderStackedBars()}
-          {chartType === CHART_TYPE.GROUPED && renderGroupedBars()}
-          {chartType === CHART_TYPE.LINE && renderLineChart()}
-        </svg>
+          <svg
+            className={styles.chart}
+            viewBox={`0 0 ${svgWidth} ${BAR_CHART_HEIGHT}`}
+            style={isWeekly ? { minWidth: svgWidth } : {}}
+            aria-label={`${chartType} ${timeRange} hours chart`}
+          >
+            {chartType === CHART_TYPE.STACKED && renderStackedBars()}
+            {chartType === CHART_TYPE.GROUPED && renderGroupedBars()}
+            {chartType === CHART_TYPE.LINE && renderLineChart()}
+          </svg>
+        </div>
+        {tooltip && (
+          <div
+            className={styles.tooltip}
+            style={{ left: tooltip.x, top: tooltip.y }}
+          >
+            {tooltip.text}
+          </div>
+        )}
       </div>
     );
   };
