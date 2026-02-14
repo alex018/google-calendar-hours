@@ -11,7 +11,7 @@ const App = () => {
   const getGoogleAuthUrl = () => {
     const params = encode({
       client_id: googleClientId,
-      redirect_uri: window.location.origin,
+      redirect_uri: window.location.origin + window.location.pathname.replace(/\/$/, ''),
       scope: googleScope,
       response_type: 'token',
     });
