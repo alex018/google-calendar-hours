@@ -17,7 +17,7 @@ const App = () => {
 
     if (hashParams.access_token) {
       sessionStorage.setItem('accessToken', hashParams.access_token);
-      window.location = '/';
+      window.location = window.location.pathname.replace(/\/$/, '') || '/';
     }
   }, []);
 
