@@ -206,9 +206,16 @@ export const selectYearlyGraphData = (state) => {
   });
 };
 
+// Lightweight memoisation: returns the same object reference when inputs
+// (events map reference + year) haven't changed.
+let monthlyCache = { eventsMap: null, year: null, result: {} };
 export const selectAllCalendarsMonthlyData = (state, year) => {
   const eventsMap = selectAllCalendarEventsMap(state);
   const targetYear = year || dayjs().year();
+
+  if (eventsMap === monthlyCache.eventsMap && targetYear === monthlyCache.year) {
+    return monthlyCache.result;
+  }
 
   const result = {};
   Object.keys(eventsMap).forEach((calendarId) => {
@@ -226,11 +233,18 @@ export const selectAllCalendarsMonthlyData = (state, year) => {
       };
     });
   });
+  monthlyCache = { eventsMap, year: targetYear, result };
   return result;
 };
 
+let yearlyCache = { eventsMap: null, result: {} };
 export const selectAllCalendarsYearlyData = (state) => {
   const eventsMap = selectAllCalendarEventsMap(state);
+
+  if (eventsMap === yearlyCache.eventsMap) {
+    return yearlyCache.result;
+  }
+
   const currentYear = dayjs().year();
   const years = Array.from({ length: 5 }, (_, i) => currentYear - 4 + i);
 
@@ -247,12 +261,19 @@ export const selectAllCalendarsYearlyData = (state) => {
       ),
     }));
   });
+  yearlyCache = { eventsMap, result };
   return result;
 };
 
+let weeklyCache = { eventsMap: null, year: null, result: {} };
 export const selectAllCalendarsWeeklyData = (state, year) => {
   const eventsMap = selectAllCalendarEventsMap(state);
   const currentYear = year || dayjs().year();
+
+  if (eventsMap === weeklyCache.eventsMap && currentYear === weeklyCache.year) {
+    return weeklyCache.result;
+  }
+
   // Determine number of ISO weeks in the current year
   const weeksInYear = dayjs(`${currentYear}-12-28`).isoWeek();
 
@@ -279,6 +300,7 @@ export const selectAllCalendarsWeeklyData = (state, year) => {
       };
     });
   });
+  weeklyCache = { eventsMap, year: currentYear, result };
   return result;
 };
 

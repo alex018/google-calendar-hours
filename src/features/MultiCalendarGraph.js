@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import dayjs from 'dayjs';
 
@@ -78,34 +78,57 @@ const MultiCalendarGraph = () => {
   const [graphYear, setGraphYear] = useState(dayjs().year());
   const scrollRef = useRef(null);
   const chartAreaRef = useRef(null);
-  const [tooltip, setTooltip] = useState(null); // { x, y, text } | null
+  const tooltipRef = useRef(null);
   const touchTimerRef = useRef(null);
 
-  const makeHandlers = (text) => ({
-    onMouseEnter(e) {
-      const rect = chartAreaRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      setTooltip({ x: e.clientX - rect.left, y: e.clientY - rect.top, text });
-    },
-    onMouseMove(e) {
-      const rect = chartAreaRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      setTooltip((prev) =>
-        prev ? { ...prev, x: e.clientX - rect.left, y: e.clientY - rect.top } : prev
-      );
-    },
-    onMouseLeave() {
-      setTooltip(null);
-    },
-    onTouchStart(e) {
-      clearTimeout(touchTimerRef.current);
-      const touch = e.touches[0];
-      const rect = chartAreaRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      setTooltip({ x: touch.clientX - rect.left, y: touch.clientY - rect.top, text });
-      touchTimerRef.current = setTimeout(() => setTooltip(null), 2500);
-    },
-  });
+  // Show / hide / move tooltip via direct DOM manipulation (no re-renders)
+  const showTooltip = useCallback((x, y, text) => {
+    const el = tooltipRef.current;
+    if (!el) return;
+    el.textContent = text;
+    el.style.left = `${x}px`;
+    el.style.top = `${y}px`;
+    el.style.display = 'block';
+  }, []);
+
+  const hideTooltip = useCallback(() => {
+    const el = tooltipRef.current;
+    if (el) el.style.display = 'none';
+  }, []);
+
+  // Event delegation: single handler on the chart area instead of per-element
+  const onPointerOver = useCallback((e) => {
+    const target = e.target.closest('[data-tip]');
+    if (!target) { hideTooltip(); return; }
+    const rect = chartAreaRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    showTooltip(e.clientX - rect.left, e.clientY - rect.top, target.dataset.tip);
+  }, [showTooltip, hideTooltip]);
+
+  const onPointerMove = useCallback((e) => {
+    const el = tooltipRef.current;
+    if (!el || el.style.display === 'none') return;
+    const rect = chartAreaRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    el.style.left = `${e.clientX - rect.left}px`;
+    el.style.top = `${e.clientY - rect.top}px`;
+  }, []);
+
+  const onPointerLeave = useCallback(() => { hideTooltip(); }, [hideTooltip]);
+
+  const onTouchStart = useCallback((e) => {
+    const target = e.target.closest('[data-tip]');
+    if (!target) return;
+    clearTimeout(touchTimerRef.current);
+    const touch = e.touches[0];
+    const rect = chartAreaRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    showTooltip(touch.clientX - rect.left, touch.clientY - rect.top, target.dataset.tip);
+    touchTimerRef.current = setTimeout(() => hideTooltip(), 2500);
+  }, [showTooltip, hideTooltip]);
+
+  // Clean up touch timer on unmount
+  useEffect(() => () => clearTimeout(touchTimerRef.current), []);
 
   // These selectors re-run whenever graphYear changes
   const monthlyData = useSelector((state) => selectAllCalendarsMonthlyData(state, graphYear));
@@ -270,7 +293,6 @@ const MultiCalendarGraph = () => {
                 const barH = (hours / yMax) * chartHeight;
                 const y = yBottom - barH;
                 yBottom = y;
-                const h = makeHandlers(`${cal.label} — ${period.label}: ${hours}h`);
                 return (
                   <rect
                     key={cal.id}
@@ -281,10 +303,7 @@ const MultiCalendarGraph = () => {
                     fill={cal.color}
                     rx="3"
                     className={styles.bar}
-                    onMouseEnter={h.onMouseEnter}
-                    onMouseMove={h.onMouseMove}
-                    onMouseLeave={h.onMouseLeave}
-                    onTouchStart={h.onTouchStart}
+                    data-tip={`${cal.label} — ${period.label}: ${hours}h`}
                   />
                 );
               })}
@@ -313,7 +332,6 @@ const MultiCalendarGraph = () => {
                 barSlotWidth * 0.1 +
                 calIdx * groupedBarWidth;
               const y = PADDING.top + chartHeight - barH;
-              const h = makeHandlers(`${cal.label} — ${period.label}: ${hours}h`);
               return (
                 <rect
                   key={cal.id}
@@ -324,10 +342,7 @@ const MultiCalendarGraph = () => {
                   fill={cal.color}
                   rx="3"
                   className={styles.bar}
-                  onMouseEnter={h.onMouseEnter}
-                  onMouseMove={h.onMouseMove}
-                  onMouseLeave={h.onMouseLeave}
-                  onTouchStart={h.onTouchStart}
+                  data-tip={`${cal.label} — ${period.label}: ${hours}h`}
                 />
               );
             })}
@@ -366,12 +381,11 @@ const MultiCalendarGraph = () => {
                 strokeLinecap="round"
                 className={styles.line}
               />
-              {calData.map((d) => {
+              {calData.map((d, i) => {
                 if (d.hours === 0) return null;
-                const x = PADDING.left + calData.indexOf(d) * barSlotWidth + barSlotWidth / 2;
+                const x = PADDING.left + i * barSlotWidth + barSlotWidth / 2;
                 const y =
                   PADDING.top + chartHeight - (d.hours / yMax) * chartHeight;
-                const h = makeHandlers(`${cal.label} — ${d.label}: ${d.hours}h`);
                 return (
                   <circle
                     key={d.label}
@@ -380,10 +394,7 @@ const MultiCalendarGraph = () => {
                     r="3"
                     fill={cal.color}
                     className={styles.dot}
-                    onMouseEnter={h.onMouseEnter}
-                    onMouseMove={h.onMouseMove}
-                    onMouseLeave={h.onMouseLeave}
-                    onTouchStart={h.onTouchStart}
+                    data-tip={`${cal.label} — ${d.label}: ${d.hours}h`}
                   />
                 );
               })}
@@ -435,9 +446,7 @@ const MultiCalendarGraph = () => {
 
     return (
       <React.Fragment>
-        {slices.map((s) => {
-          const h = makeHandlers(`${s.label}: ${s.total.toFixed(1)}h (${s.pct}%)`);
-          return (
+        {slices.map((s) => (
             <path
               key={s.id}
               d={pieSlicePath(cx, cy, r, s.startAngle, s.endAngle, innerR)}
@@ -445,13 +454,9 @@ const MultiCalendarGraph = () => {
               stroke="#fff"
               strokeWidth="2"
               className={styles.bar}
-              onMouseEnter={h.onMouseEnter}
-              onMouseMove={h.onMouseMove}
-              onMouseLeave={h.onMouseLeave}
-              onTouchStart={h.onTouchStart}
+              data-tip={`${s.label}: ${s.total.toFixed(1)}h (${s.pct}%)`}
             />
-          );
-        })}
+          ))}
         {/* Center label */}
         <text x={cx} y={cy - 6} textAnchor="middle" className={styles.pieCenter}>
           {grandTotal.toFixed(0)}h
@@ -494,9 +499,16 @@ const MultiCalendarGraph = () => {
         </div>
       );
     }
+    const delegationProps = {
+      onMouseOver: onPointerOver,
+      onMouseMove: onPointerMove,
+      onMouseLeave: onPointerLeave,
+      onTouchStart,
+    };
+
     if (isPie) {
       return (
-        <div ref={chartAreaRef} className={styles.chartArea}>
+        <div ref={chartAreaRef} className={styles.chartArea} {...delegationProps}>
           <svg
             className={styles.chart}
             viewBox={`0 0 ${pieSvgWidth} ${pieSvgHeight}`}
@@ -504,19 +516,12 @@ const MultiCalendarGraph = () => {
           >
             {renderPieChart()}
           </svg>
-          {tooltip && (
-            <div
-              className={styles.tooltip}
-              style={{ left: tooltip.x, top: tooltip.y }}
-            >
-              {tooltip.text}
-            </div>
-          )}
+          <div ref={tooltipRef} className={styles.tooltip} style={{ display: 'none' }} />
         </div>
       );
     }
     return (
-      <div ref={chartAreaRef} className={styles.chartArea}>
+      <div ref={chartAreaRef} className={styles.chartArea} {...delegationProps}>
         <div
           className={`${styles.chartScroll} ${isWeekly ? styles.scrollable : ''}`}
           ref={scrollRef}
@@ -532,14 +537,7 @@ const MultiCalendarGraph = () => {
             {chartType === CHART_TYPE.LINE && renderLineChart()}
           </svg>
         </div>
-        {tooltip && (
-          <div
-            className={styles.tooltip}
-            style={{ left: tooltip.x, top: tooltip.y }}
-          >
-            {tooltip.text}
-          </div>
-        )}
+        <div ref={tooltipRef} className={styles.tooltip} style={{ display: 'none' }} />
       </div>
     );
   };
