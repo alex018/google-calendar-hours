@@ -2,3 +2,10 @@
   width: 100%;
   margin-bottom: 8px;
 }
+
+.loadingBar {
+  font-size: 12px;
+  color: #888;
+  text-align: center;
+  padding: 4px 0;
+}

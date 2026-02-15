@@ -6,7 +6,7 @@ import { fetchCalendarEvents } from './api';
 export const calendarEvents = createSlice({
   name: 'calendarEvents',
   initialState: {
-    loading: false,
+    loadingCount: 0,
     map: {},
   },
   reducers: {
@@ -14,7 +14,7 @@ export const calendarEvents = createSlice({
       state.map[payload.calendarId] = payload.events;
     },
     setLoading: (state, { payload }) => {
-      state.loading = payload;
+      state.loadingCount += payload ? 1 : -1;
     },
   },
 });
@@ -59,10 +59,12 @@ export const loadCalendarEvents = ({ calendarId }) => async (
 };
 
 export const selectIsEventsLoading = (state) =>
-  state.calendarEvents?.loading ?? false;
+  (state.calendarEvents?.loadingCount ?? 0) > 0;
 
 export const selectCalendarEvents = (state, calendarId) =>
-  (!selectIsEventsLoading(state) && state.calendarEvents?.map[calendarId]) ??
-  null;
+  state.calendarEvents?.map[calendarId] ?? null;
+
+export const selectAllCalendarEventsMap = (state) =>
+  state.calendarEvents?.map ?? {};
 
 export default calendarEvents.reducer;

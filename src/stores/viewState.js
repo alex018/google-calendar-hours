@@ -1,11 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
+import isoWeek from 'dayjs/plugin/isoWeek';
 import 'dayjs/locale/de';
 
-import { loadCalendarEvents, selectCalendarEvents } from './calendarEvents';
+import { loadCalendarEvents, selectCalendarEvents, selectAllCalendarEventsMap } from './calendarEvents';
 import { updateConfig } from './storage';
 import { RANGE_TYPE, WEEK_START } from '../constants';
 import roundHours from '../utils/roundHours';
+
+dayjs.extend(isoWeek);
 
 export const viewState = createSlice({
   name: 'viewState',
@@ -201,6 +204,82 @@ export const selectYearlyGraphData = (state) => {
       hours: computeHoursInRange(events, start, end),
     };
   });
+};
+
+export const selectAllCalendarsMonthlyData = (state, year) => {
+  const eventsMap = selectAllCalendarEventsMap(state);
+  const targetYear = year || dayjs().year();
+
+  const result = {};
+  Object.keys(eventsMap).forEach((calendarId) => {
+    const events = eventsMap[calendarId];
+    if (!events) return;
+    result[calendarId] = Array.from({ length: 12 }, (_, month) => {
+      const d = dayjs(`${targetYear}-${String(month + 1).padStart(2, '0')}-01`);
+      return {
+        label: d.format('MMM'),
+        hours: computeHoursInRange(
+          events,
+          d.startOf('month').toDate(),
+          d.endOf('month').add(1, 'millisecond').toDate()
+        ),
+      };
+    });
+  });
+  return result;
+};
+
+export const selectAllCalendarsYearlyData = (state) => {
+  const eventsMap = selectAllCalendarEventsMap(state);
+  const currentYear = dayjs().year();
+  const years = Array.from({ length: 5 }, (_, i) => currentYear - 4 + i);
+
+  const result = {};
+  Object.keys(eventsMap).forEach((calendarId) => {
+    const events = eventsMap[calendarId];
+    if (!events) return;
+    result[calendarId] = years.map((year) => ({
+      label: String(year),
+      hours: computeHoursInRange(
+        events,
+        dayjs(`${year}-01-01`).startOf('year').toDate(),
+        dayjs(`${year}-12-31`).endOf('year').add(1, 'millisecond').toDate()
+      ),
+    }));
+  });
+  return result;
+};
+
+export const selectAllCalendarsWeeklyData = (state, year) => {
+  const eventsMap = selectAllCalendarEventsMap(state);
+  const currentYear = year || dayjs().year();
+  // Determine number of ISO weeks in the current year
+  const weeksInYear = dayjs(`${currentYear}-12-28`).isoWeek();
+
+  const result = {};
+  Object.keys(eventsMap).forEach((calendarId) => {
+    const events = eventsMap[calendarId];
+    if (!events) return;
+    result[calendarId] = Array.from({ length: weeksInYear }, (_, i) => {
+      const weekNum = i + 1;
+      const weekStart = dayjs()
+        .year(currentYear)
+        .isoWeek(weekNum)
+        .startOf('isoWeek')
+        .toDate();
+      const weekEnd = dayjs()
+        .year(currentYear)
+        .isoWeek(weekNum)
+        .endOf('isoWeek')
+        .add(1, 'millisecond')
+        .toDate();
+      return {
+        label: `W${weekNum}`,
+        hours: computeHoursInRange(events, weekStart, weekEnd),
+      };
+    });
+  });
+  return result;
 };
 
 export const setSelectedCalendar = ({ calendarId }) => (dispatch, getState) => {
