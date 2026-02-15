@@ -1,14 +1,16 @@
 .container {
   background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 20px;
+  border-radius: 16px;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.06),
+    0 4px 16px rgba(0, 0, 0, 0.04);
+  padding: 24px;
 }
 
 @media (max-width: 600px) {
   .container {
-    padding: 12px;
-    border-radius: 6px;
+    padding: 16px;
+    border-radius: 12px;
   }
 }
 
@@ -16,8 +18,10 @@
 .calendarList {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 16px;
-  margin-bottom: 14px;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .calendarItem {
@@ -26,16 +30,24 @@
   gap: 6px;
   cursor: pointer;
   font-size: 13px;
-  color: #333;
+  color: #334155;
   user-select: none;
+  padding: 5px 10px 5px 8px;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.calendarItem:hover {
+  background: #f8fafc;
 }
 
 .checkbox {
   margin: 0;
   cursor: pointer;
-  accent-color: #1a73e8;
-  width: 14px;
-  height: 14px;
+  accent-color: #4f46e5;
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
 }
 
 .colorDot {
@@ -43,6 +55,7 @@
   height: 10px;
   border-radius: 50%;
   flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
 }
 
 .calendarName {
@@ -50,6 +63,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 200px;
+  font-weight: 500;
 }
 
 @media (max-width: 600px) {
@@ -60,10 +74,11 @@
 
 .loadingBadge {
   font-size: 10px;
-  color: #888;
-  background: #f1f3f4;
-  border-radius: 4px;
-  padding: 1px 5px;
+  color: #94a3b8;
+  background: #f1f5f9;
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-weight: 500;
 }
 
 /* ── Controls row ── */
@@ -71,7 +86,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 14px;
+  margin-bottom: 20px;
   flex-wrap: wrap;
 }
 
@@ -83,26 +98,34 @@
 
 .controlLabel {
   font-size: 12px;
-  color: #888;
-  font-weight: 500;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .toggle {
   display: flex;
-  border: 1px solid #dadce0;
-  border-radius: 4px;
-  overflow: hidden;
+  background: #f1f5f9;
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
 }
 
 .toggleBtn {
-  background: none;
+  background: transparent;
   border: none;
   padding: 6px 14px;
   font-size: 13px;
   cursor: pointer;
-  color: #5f6368;
-  transition: background 0.15s;
+  color: #64748b;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    box-shadow 0.2s;
   line-height: 1.4;
+  border-radius: 6px;
+  font-weight: 500;
 }
 
 @media (max-width: 600px) {
@@ -112,23 +135,28 @@
   }
 }
 
-.toggleBtn:hover:not(:disabled) {
-  background: #f1f3f4;
+.toggleBtn:hover:not(:disabled):not(.active) {
+  background: #e2e8f0;
+  color: #334155;
 }
 
 .toggleBtn:disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: default;
 }
 
 .toggleBtn.active {
-  background: #1a73e8;
-  color: #fff;
+  background: #fff;
+  color: #1e293b;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 /* ── Chart area ── */
 .chartArea {
   position: relative;
+  background: #fafbfc;
+  border-radius: 12px;
+  padding: 8px;
 }
 
 .chartScroll {
@@ -138,17 +166,18 @@
 /* ── Tooltip ── */
 .tooltip {
   position: absolute;
-  background: rgba(30, 30, 30, 0.82);
+  background: #1e293b;
   color: #fff;
   font-size: 12px;
+  font-weight: 500;
   line-height: 1.4;
-  padding: 5px 10px;
-  border-radius: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
   pointer-events: none;
   white-space: nowrap;
   transform: translate(-50%, calc(-100% - 10px));
   z-index: 20;
-  backdrop-filter: blur(2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .scrollable {
@@ -184,7 +213,7 @@
 }
 
 .dot {
-  transition: r 0.1s;
+  transition: r 0.15s;
   cursor: pointer;
 }
 
@@ -194,44 +223,52 @@
 
 .axisLabel {
   font-size: 10px;
-  fill: #888;
+  fill: #94a3b8;
+  font-weight: 500;
 }
 
 .barLabel {
   font-size: 9px;
-  fill: #555;
+  fill: #64748b;
 }
 
 /* ── Pie chart ── */
 .pieCenter {
-  font-size: 18px;
-  font-weight: 600;
-  fill: #333;
+  font-size: 20px;
+  font-weight: 700;
+  fill: #1e293b;
 }
 
 .pieCenterSub {
   font-size: 11px;
-  fill: #888;
+  fill: #94a3b8;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .legendLabel {
   font-size: 12px;
-  fill: #333;
+  fill: #334155;
   dominant-baseline: middle;
+  font-weight: 500;
 }
 
 .legendHours {
   font-size: 12px;
-  fill: #555;
+  fill: #64748b;
   dominant-baseline: middle;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ── Empty state ── */
 .empty {
   text-align: center;
-  color: #888;
-  font-size: 13px;
-  padding: 40px 0;
+  color: #94a3b8;
+  font-size: 14px;
+  padding: 60px 20px;
+  font-weight: 500;
 }
 
 /* ── Year navigation ── */
@@ -240,40 +277,44 @@
   align-items: center;
   justify-content: center;
   gap: 16px;
-  margin-top: 12px;
+  margin-top: 16px;
 }
 
 .yearNavBtn {
-  background: none;
-  border: 1px solid #dadce0;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  width: 36px;
+  height: 36px;
   font-size: 16px;
   line-height: 1;
   cursor: pointer;
-  color: #5f6368;
+  color: #475569;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s, border-color 0.15s;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
 .yearNavBtn:hover:not(:disabled) {
-  background: #f1f3f4;
-  border-color: #aaa;
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .yearNavBtn:disabled {
-  opacity: 0.35;
+  opacity: 0.3;
   cursor: default;
 }
 
 .yearLabel {
-  font-size: 15px;
-  font-weight: 600;
-  color: #444;
-  min-width: 48px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  min-width: 52px;
   text-align: center;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.01em;
 }

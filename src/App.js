@@ -26,23 +26,30 @@ const App = () => {
       <div className={styles.app}>
         <div className={styles.sticky}>
           <div className={styles.content}>
-            <h1 className={styles.headline}>
-              Google Calendar Hours Calculator
-            </h1>
+            <div className={styles.header}>
+              <div className={styles.headerIcon}>
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="9" stroke="#fff" strokeWidth="2" />
+                  <path d="M12 7v5l3.5 3.5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <h1 className={styles.headline}>
+                Calendar Hours
+              </h1>
+            </div>
             {!hasToken && <AuthScreen />}
             {hasToken && <Interface />}
           </div>
           <footer className={styles.footer}>
             <p>
-              <span>© 2011 - 2023. This app is open source. </span>
+              <span>Open source project — </span>
               <a
                 href="https://github.com/aronwoost/google-calendar-hours"
                 target="_blank"
                 rel="noreferrer"
               >
-                Check it on GitHub
+                View on GitHub
               </a>
-              <span>.</span>
             </p>
           </footer>
         </div>

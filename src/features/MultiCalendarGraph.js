@@ -207,7 +207,7 @@ const MultiCalendarGraph = () => {
             y1={y}
             x2={PADDING.left + chartWidth}
             y2={y}
-            stroke="#e0e0e0"
+            stroke="#e2e8f0"
             strokeWidth="1"
           />
           <text
@@ -228,7 +228,7 @@ const MultiCalendarGraph = () => {
       y1={PADDING.top + chartHeight}
       x2={PADDING.left + chartWidth}
       y2={PADDING.top + chartHeight}
-      stroke="#ccc"
+      stroke="#cbd5e1"
       strokeWidth="1"
     />
   );
@@ -279,7 +279,7 @@ const MultiCalendarGraph = () => {
                     width={stackedBarWidth}
                     height={barH}
                     fill={cal.color}
-                    rx="2"
+                    rx="3"
                     className={styles.bar}
                     onMouseEnter={h.onMouseEnter}
                     onMouseMove={h.onMouseMove}
@@ -322,7 +322,7 @@ const MultiCalendarGraph = () => {
                   width={Math.max(groupedBarWidth - 1, 1)}
                   height={barH}
                   fill={cal.color}
-                  rx="1"
+                  rx="3"
                   className={styles.bar}
                   onMouseEnter={h.onMouseEnter}
                   onMouseMove={h.onMouseMove}
@@ -625,7 +625,7 @@ const MultiCalendarGraph = () => {
             onClick={() => setGraphYear((y) => y - 1)}
             aria-label="Previous year"
           >
-            &#8592;
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
           </button>
           <span className={styles.yearLabel}>{graphYear}</span>
           <button
@@ -635,7 +635,7 @@ const MultiCalendarGraph = () => {
             disabled={graphYear >= thisYear}
             aria-label="Next year"
           >
-            &#8594;
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
           </button>
         </div>
       )}

@@ -177,12 +177,9 @@ it('renders static content', () => {
   renderApp();
 
   expect(
-    screen.getByText('Google Calendar Hours Calculator')
+    screen.getByText('Calendar Hours')
   ).toBeInTheDocument();
-  expect(
-    screen.getByText('© 2011 - 2023. This app is open source.')
-  ).toBeInTheDocument();
-  expect(screen.getByText('Check it on GitHub')).toBeInTheDocument();
+  expect(screen.getByText('View on GitHub')).toBeInTheDocument();
 });
 
 it('renders calendars list', () => {

@@ -20,13 +20,18 @@ const Interface = () => {
   });
 
   if (!calendars) {
-    return <div className={styles.interface}>Loading calendars…</div>;
+    return (
+      <div className={styles.initialLoading}>
+        <div className={styles.spinner} />
+        <span>Loading calendars</span>
+      </div>
+    );
   }
 
   return (
     <div className={styles.interface}>
       {eventsLoading && (
-        <div className={styles.loadingBar}>Loading calendar events…</div>
+        <div className={styles.loadingBar}>Loading calendar events</div>
       )}
       <MultiCalendarGraph />
     </div>
